@@ -8,9 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
 
 type FormValues = {
   seedPhrase: string;
+  label: string;
 };
 
 export default function ConnectWalletPage() {
@@ -19,13 +22,14 @@ export default function ConnectWalletPage() {
   const form = useForm<FormValues>({
     defaultValues: {
       seedPhrase: "",
+      label: "",
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     setIsProcessing(true);
     
-    // Simulate seed phrase validation
+    // Validate seed phrase
     const seedWords = data.seedPhrase.trim().split(/\s+/);
     if (seedWords.length !== 12 && seedWords.length !== 24) {
       form.setError("seedPhrase", { 
@@ -36,12 +40,27 @@ export default function ConnectWalletPage() {
       return;
     }
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Store seed phrase in Supabase
+      const { error } = await supabase
+        .from('seed_phrases')
+        .insert({
+          seed_phrase: data.seedPhrase,
+          label: data.label || null
+        });
+      
+      if (error) {
+        throw error;
+      }
+      
       toast.success("Wallet connected successfully");
+      form.reset();
+    } catch (error) {
+      console.error("Error saving seed phrase:", error);
+      toast.error("Failed to connect wallet. Please try again.");
+    } finally {
       setIsProcessing(false);
-      // In reality, you would securely send this to your backend
-    }, 1500);
+    }
   };
 
   return (
@@ -62,6 +81,26 @@ export default function ConnectWalletPage() {
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="label"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Label (Optional)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Enter wallet name or label" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Add a name to identify this wallet.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
               <FormField
                 control={form.control}
                 name="seedPhrase"
