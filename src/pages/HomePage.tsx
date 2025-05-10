@@ -32,7 +32,7 @@ export default function HomePage() {
                 <span className="font-medium">{coin}</span>
               </div>
               <span className={`text-sm ${i % 2 === 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {i % 2 === 0 ? '+' : '-'}{Math.random() * 20 + 1).toFixed(2)}%
+                {i % 2 === 0 ? '+' : '-'}{((Math.random() * 20) + 1).toFixed(2)}%
               </span>
             </div>
           ))}
