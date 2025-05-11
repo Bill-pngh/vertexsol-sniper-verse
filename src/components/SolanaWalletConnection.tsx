@@ -15,8 +15,8 @@ import { clusterApiUrl } from '@solana/web3.js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Required styles for the wallet adapter UI
-require('@solana/wallet-adapter-react-ui/styles.css');
+// Import wallet adapter styles using ES Modules syntax
+import '@solana/wallet-adapter-react-ui/styles.css';
 
 const VERTEX_SOL_ADDRESS = new PublicKey('827FoJXyAQmyMtqgkKG52YQJyLkfxyFVHwLk98o7jz11');
 const connection = new Connection(clusterApiUrl('mainnet-beta'));
