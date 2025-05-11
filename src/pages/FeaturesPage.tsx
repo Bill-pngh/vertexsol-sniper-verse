@@ -1,7 +1,7 @@
 
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Button } from "@/components/ui/button";
-import { Book, ChevronRight, Eye, Lock } from "lucide-react";
+import { Book, ChevronRight, Eye, Lock, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +17,12 @@ export default function FeaturesPage() {
       title: "Trade Training",
       description: "Learn trading strategies with our algorithm-driven training tool",
       icon: Book,
+      comingSoon: true,
+    },
+    {
+      title: "Automate Trading with AI",
+      description: "Use advanced AI algorithms to automate your trading strategies and maximize profits",
+      icon: Zap,
       comingSoon: true,
     },
   ];
