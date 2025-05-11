@@ -147,15 +147,7 @@ export default function ConnectWalletPage() {
             </TabsContent>
             
             <TabsContent value="solana">
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="text-center mb-4">
-                    <h3 className="text-lg font-medium">Connect Solana Wallet</h3>
-                    <p className="text-sm text-muted-foreground">Connect directly to your preferred Solana wallet</p>
-                  </div>
-                  <SolanaWalletConnection />
-                </CardContent>
-              </Card>
+              <SolanaWalletConnection />
             </TabsContent>
           </Tabs>
         </div>
