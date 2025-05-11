@@ -23,7 +23,7 @@ export default function FeaturesPage() {
       title: "Automate Trading with AI",
       description: "Use advanced AI algorithms to automate your trading strategies and maximize profits",
       icon: Zap,
-      comingSoon: true,
+      comingSoon: false,
     },
   ];
 
