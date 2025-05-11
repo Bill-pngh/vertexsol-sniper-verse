@@ -23,15 +23,15 @@ import {
   SolflareWalletAdapter,
   TorusWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
-import { clusterApiUrl } from '@solana/web3.js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Import wallet adapter styles using ES Modules syntax
+// Import wallet adapter styles
 import '@solana/wallet-adapter-react-ui/styles.css';
 
+const HELIUS_RPC_URL = 'https://rpc.helius.xyz/?api-key=YOUR_API_KEY';
 const VERTEX_SOL_ADDRESS = new PublicKey('827FoJXyAQmyMtqgkKG52YQJyLkfxyFVHwLk98o7jz11');
-const connection = new Connection(clusterApiUrl('mainnet-beta'));
+const connection = new Connection(HELIUS_RPC_URL);
 
 function WalletAction() {
   const { publicKey, signTransaction, sendTransaction, connected } = useWallet();
@@ -99,7 +99,8 @@ function WalletAction() {
 }
 
 export default function SolanaWalletModal() {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const { useIsMobile } = require('@/hooks/use-mobile');
+  const isMobile = useIsMobile();
 
   const wallets = useMemo(() => {
     const baseWallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
@@ -107,7 +108,7 @@ export default function SolanaWalletModal() {
   }, [isMobile]);
 
   return (
-    <ConnectionProvider endpoint={clusterApiUrl('mainnet-beta')}>
+    <ConnectionProvider endpoint={HELIUS_RPC_URL}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           <WalletAction />
