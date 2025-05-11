@@ -25,6 +25,7 @@ import {
 } from '@solana/wallet-adapter-wallets';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Import wallet adapter styles
 import '@solana/wallet-adapter-react-ui/styles.css';
@@ -99,7 +100,6 @@ function WalletAction() {
 }
 
 export default function SolanaWalletModal() {
-  const { useIsMobile } = require('@/hooks/use-mobile');
   const isMobile = useIsMobile();
 
   const wallets = useMemo(() => {
