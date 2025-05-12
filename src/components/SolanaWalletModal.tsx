@@ -146,7 +146,15 @@ export default function SolanaWalletModal() {
       },
       cluster: 'mainnet-beta',
       onWalletNotFound: () => Promise.resolve(),
-      addressSelector: () => Promise.resolve('')
+      addressSelector: async (accounts) => {
+        // If there's only one account, return its address
+        if (accounts.length === 1) {
+          return accounts[0].address;
+        }
+        // If there are multiple accounts, return the first one
+        // In a real app, you might want to let the user select which account to use
+        return accounts[0]?.address || '';
+      }
     })
   ], []);
 
