@@ -140,7 +140,7 @@ export default function SolanaWalletModal() {
       appIdentity: { name: "VertexSol Wallet App" },
       authorizationResultCache: {
         get: () => null,
-        set: () => {}
+        set: () => Promise.resolve()
       }
     })
   ], []);
