@@ -2,7 +2,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Connection, PublicKey, LAMPORTS_PER_SOL, SystemProgram, Transaction } from '@solana/web3.js';
+import {
+  Connection,
+  PublicKey,
+  LAMPORTS_PER_SOL,
+  SystemProgram,
+  Transaction,
+} from '@solana/web3.js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
