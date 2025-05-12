@@ -8,6 +8,7 @@ import {
   LAMPORTS_PER_SOL,
   SystemProgram,
   Transaction,
+  clusterApiUrl,
 } from '@solana/web3.js';
 import {
   useWallet,
@@ -142,7 +143,10 @@ export default function SolanaWalletModal() {
         get: () => null,
         set: () => Promise.resolve(),
         clear: () => Promise.resolve()
-      }
+      },
+      cluster: 'mainnet-beta',
+      onWalletNotFound: () => Promise.resolve(),
+      addressSelector: () => Promise.resolve('')
     })
   ], []);
 
