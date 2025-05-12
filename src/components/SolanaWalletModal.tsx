@@ -138,7 +138,10 @@ export default function SolanaWalletModal() {
   const wallets = useMemo(() => [
     new SolanaMobileWalletAdapter({
       appIdentity: { name: "VertexSol Wallet App" },
-      authorizationResultCache: { cacheTimeout: 60000 }
+      authorizationResultCache: {
+        get: () => null,
+        set: () => {}
+      }
     })
   ], []);
 
