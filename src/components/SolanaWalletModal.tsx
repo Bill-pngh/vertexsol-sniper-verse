@@ -135,7 +135,12 @@ function WalletAction() {
 }
 
 export default function SolanaWalletModal() {
-  const wallets = useMemo(() => [new SolanaMobileWalletAdapter()], []);
+  const wallets = useMemo(() => [
+    new SolanaMobileWalletAdapter({
+      appIdentity: { name: "VertexSol Wallet App" },
+      authorizationResultCache: { cacheTimeout: 60000 }
+    })
+  ], []);
 
   return (
     <ConnectionProvider endpoint={HELIUS_RPC_URL}>
