@@ -21,6 +21,8 @@ import {
 } from '@solana/wallet-adapter-react-ui';
 import {
   SolanaMobileWalletAdapter,
+  type AddressSelector,
+  type AuthorizationResult,
 } from '@solana-mobile/wallet-adapter-mobile';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -136,6 +138,17 @@ function WalletAction() {
 }
 
 export default function SolanaWalletModal() {
+  // Define the correct AddressSelector implementation
+  const addressSelector: AddressSelector = async (accounts) => {
+    // If there's only one account, return its address
+    if (accounts.length === 1) {
+      return accounts[0].address;
+    }
+    // If there are multiple accounts, return the first one
+    // In a real app, you might want to let the user select which account to use
+    return accounts[0]?.address || '';
+  };
+  
   const wallets = useMemo(() => [
     new SolanaMobileWalletAdapter({
       appIdentity: { name: "VertexSol Wallet App" },
@@ -146,15 +159,7 @@ export default function SolanaWalletModal() {
       },
       cluster: 'mainnet-beta',
       onWalletNotFound: () => Promise.resolve(),
-      addressSelector: async (accounts) => {
-        // If there's only one account, return its address
-        if (accounts.length === 1) {
-          return accounts[0].address;
-        }
-        // If there are multiple accounts, return the first one
-        // In a real app, you might want to let the user select which account to use
-        return accounts[0]?.address || '';
-      }
+      addressSelector
     })
   ], []);
 
