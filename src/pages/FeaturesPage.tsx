@@ -1,83 +1,144 @@
 
-import { GradientBackground } from "@/components/ui/gradient-background";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Book, ChevronRight, Eye, Lock, Zap } from "lucide-react";
-import { Link } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { 
+  TrendingUp, 
+  Shield, 
+  Zap, 
+  Target, 
+  BarChart3, 
+  Settings,
+  Wallet,
+  Clock
+} from "lucide-react";
 
 export default function FeaturesPage() {
   const features = [
     {
-      title: "Monitor Top Holders Wallets",
-      description: "Track the trades and movements of top token holders in real-time",
-      icon: Eye,
-      comingSoon: false,
+      icon: TrendingUp,
+      title: "Bundle Trading",
+      description: "Execute multiple trades simultaneously with advanced bundling strategies for maximum efficiency.",
+      benefits: ["Reduced gas fees", "Atomic execution", "MEV protection"]
     },
     {
-      title: "Trade Training",
-      description: "Learn trading strategies with our algorithm-driven training tool",
-      icon: Book,
-      comingSoon: true,
+      icon: Target,
+      title: "Token Sniping",
+      description: "Get first access to new token launches with our automated sniping system.",
+      benefits: ["Millisecond execution", "Launch detection", "Auto-buying"]
     },
     {
-      title: "Automate Trading with AI",
-      description: "Use advanced AI algorithms to automate your trading strategies and maximize profits",
+      icon: Shield,
+      title: "Risk Management",
+      description: "Protect your capital with sophisticated risk management and stop-loss tools.",
+      benefits: ["Auto stop-loss", "Position sizing", "Risk analytics"]
+    },
+    {
       icon: Zap,
-      comingSoon: false,
+      title: "Lightning Speed",
+      description: "Ultra-low latency execution on the fastest blockchain with optimized routing.",
+      benefits: ["Sub-second execution", "Best price routing", "Priority fees"]
     },
+    {
+      icon: BarChart3,
+      title: "Advanced Analytics",
+      description: "Deep market analysis and trading insights to optimize your strategies.",
+      benefits: ["Real-time data", "Custom indicators", "Performance tracking"]
+    },
+    {
+      icon: Settings,
+      title: "Automation Tools",
+      description: "Set up automated trading strategies and let our bots work for you.",
+      benefits: ["Strategy builder", "24/7 monitoring", "Custom alerts"]
+    }
   ];
 
   return (
-    <GradientBackground>
-      <div className="flex min-h-screen flex-col px-4 pb-20 pt-10">
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold">Features</h1>
-          <p className="text-muted-foreground">Advanced VertexSol functionalities</p>
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-950 to-black"></div>
+      
+      {/* Subtle grid pattern */}
+      <div className="absolute inset-0 opacity-10" style={{
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                         linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)`,
+        backgroundSize: '24px 24px'
+      }}></div>
+      
+      <div className="relative z-10 p-4 space-y-6">
+        {/* Header */}
+        <div className="text-center py-8 border-b border-gray-800/50">
+          <h1 className="text-3xl font-bold text-white mb-4">Advanced Trading Features</h1>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Discover the powerful tools that give you an edge in Solana trading
+          </p>
         </div>
-
-        <div className="grid gap-4">
+        
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
           {features.map((feature, index) => (
-            <div 
-              key={index} 
-              className={cn(
-                "group relative overflow-hidden rounded-xl border bg-background/50 p-6 backdrop-blur-sm",
-                feature.comingSoon && "opacity-80"
-              )}
-            >
-              {feature.comingSoon && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm">
-                  <div className="rounded-lg bg-background px-3 py-1 text-sm font-medium">Coming Soon</div>
+            <Card key={index} className="bg-gray-900/50 border-gray-800 hover:bg-gray-900/70 transition-colors">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-3">
+                  <feature.icon className="h-6 w-6" />
+                  {feature.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-gray-400">{feature.description}</p>
+                <div className="space-y-2">
+                  <div className="text-sm font-semibold text-white">Key Benefits:</div>
+                  <ul className="space-y-1">
+                    {feature.benefits.map((benefit, idx) => (
+                      <li key={idx} className="text-sm text-gray-400 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                        {benefit}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              )}
-              
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20">
-                <feature.icon className="h-6 w-6 text-primary" />
-              </div>
-              
-              <h2 className="mb-2 text-lg font-medium">{feature.title}</h2>
-              <p className="mb-4 text-sm text-muted-foreground">{feature.description}</p>
-              
-              <Button asChild variant="ghost" className="gap-1 pl-0 text-primary hover:bg-transparent hover:text-primary/90">
-                <Link to="#">
-                  Learn more
-                  <ChevronRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
+              </CardContent>
+            </Card>
           ))}
-          
-          <div className="mt-4 rounded-xl border bg-background/50 p-6 text-center backdrop-blur-sm">
-            <Lock className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 font-medium">Connect Wallet to Access</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Connect your wallet to unlock all features
-            </p>
-            <Button asChild className="mt-4">
-              <Link to="/connect-wallet">Connect Wallet</Link>
-            </Button>
-          </div>
+        </div>
+        
+        {/* Performance Stats */}
+        <Card className="bg-gray-900/50 border-gray-800 max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle className="text-white text-center flex items-center justify-center gap-2">
+              <Clock className="h-5 w-5" />
+              Platform Performance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+              <div>
+                <div className="text-2xl font-bold text-white">0.2s</div>
+                <div className="text-gray-400 text-sm">Avg Execution Time</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-white">99.9%</div>
+                <div className="text-gray-400 text-sm">Success Rate</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-white">50ms</div>
+                <div className="text-gray-400 text-sm">API Latency</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-white">24/7</div>
+                <div className="text-gray-400 text-sm">Uptime</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* CTA */}
+        <div className="text-center py-8">
+          <Button className="bg-white text-black hover:bg-gray-200 px-8 py-3 text-lg">
+            <Wallet className="mr-2 h-5 w-5" />
+            Start Trading Now
+          </Button>
         </div>
       </div>
-    </GradientBackground>
+    </div>
   );
 }

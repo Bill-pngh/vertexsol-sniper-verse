@@ -1,154 +1,142 @@
 
 import { useState } from "react";
-import { GradientBackground } from "@/components/ui/gradient-background";
-import { ChartContainer } from "@/components/ui/chart";
-import { 
-  Line, 
-  LineChart, 
-  ResponsiveContainer, 
-  Tooltip, 
-  XAxis, 
-  YAxis 
-} from "recharts";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
+import { TrendingUp, TrendingDown, BarChart3, Clock } from "lucide-react";
 
-// Generate sample chart data
-const generateChartData = (days: number) => {
-  const data = [];
-  const startPrice = 0.00000085;
-  let currentPrice = startPrice;
-  
-  const now = new Date();
-  for (let i = days; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-    
-    // Add some random price movement
-    const change = (Math.random() - 0.5) * 0.00000005;
-    currentPrice = Math.max(0.00000001, currentPrice + change);
-    
-    data.push({
-      date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      price: currentPrice,
-    });
-  }
-  
-  return data;
-};
-
-const timeframeOptions = [
-  { label: "1D", value: "1D", days: 1 },
-  { label: "7D", value: "7D", days: 7 },
-  { label: "30D", value: "30D", days: 30 },
-  { label: "90D", value: "90D", days: 90 },
+// Mock data for the chart
+const mockData = [
+  { time: '00:00', price: 45.2 },
+  { time: '04:00', price: 46.1 },
+  { time: '08:00', price: 47.8 },
+  { time: '12:00', price: 48.5 },
+  { time: '16:00', price: 49.2 },
+  { time: '20:00', price: 48.9 },
+  { time: '24:00', price: 50.1 },
 ];
 
 export default function ChartPage() {
-  const [timeframe, setTimeframe] = useState("30D");
-  const selectedTimeframe = timeframeOptions.find(option => option.value === timeframe);
-  const chartData = generateChartData(selectedTimeframe?.days || 30);
-  
+  const [selectedToken] = useState("SOL");
+  const [currentPrice] = useState(50.12);
+  const [priceChange] = useState(2.3);
+
   return (
-    <GradientBackground>
-      <div className="flex min-h-screen flex-col px-4 pb-20 pt-10">
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold">$PEPE Chart</h1>
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-lg font-semibold text-green-500">
-              ${chartData[chartData.length - 1].price.toFixed(8)}
-            </span>
-            <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-600">
-              +15.3%
-            </span>
-          </div>
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-950 to-black"></div>
+      
+      {/* Subtle grid pattern */}
+      <div className="absolute inset-0 opacity-10" style={{
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                         linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)`,
+        backgroundSize: '24px 24px'
+      }}></div>
+      
+      <div className="relative z-10 p-4 space-y-6">
+        {/* Header */}
+        <div className="border-b border-gray-800/50 pb-4">
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <BarChart3 className="h-6 w-6" />
+            Trading Charts
+          </h1>
+          <p className="text-gray-400">Real-time market data and analysis</p>
         </div>
         
-        <div className="mb-4 flex items-center justify-between">
-          <div className="text-sm font-medium">Chart</div>
-          <Select value={timeframe} onValueChange={setTimeframe}>
-            <SelectTrigger className="w-24">
-              <SelectValue placeholder="Timeframe" />
-            </SelectTrigger>
-            <SelectContent>
-              {timeframeOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Token Info */}
+        <Card className="bg-gray-900/50 border-gray-800">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center justify-between">
+              <span>{selectedToken}/USD</span>
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-gray-400" />
+                <span className="text-sm text-gray-400">Live</span>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-bold text-white">
+                  ${currentPrice.toFixed(2)}
+                </div>
+                <div className={`flex items-center gap-1 text-sm ${
+                  priceChange >= 0 ? 'text-green-400' : 'text-red-400'
+                }`}>
+                  {priceChange >= 0 ? 
+                    <TrendingUp className="h-4 w-4" /> : 
+                    <TrendingDown className="h-4 w-4" />
+                  }
+                  {priceChange > 0 ? '+' : ''}{priceChange}% (24h)
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-gray-400">Volume (24h)</div>
+                <div className="text-lg font-semibold text-white">$125.2M</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Chart */}
+        <Card className="bg-gray-900/50 border-gray-800">
+          <CardHeader>
+            <CardTitle className="text-white">Price Chart (24h)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={mockData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis 
+                    dataKey="time" 
+                    stroke="#9CA3AF"
+                    fontSize={12}
+                  />
+                  <YAxis 
+                    stroke="#9CA3AF"
+                    fontSize={12}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="price" 
+                    stroke="#ffffff" 
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Market Stats */}
+        <div className="grid grid-cols-2 gap-4">
+          <Card className="bg-gray-900/50 border-gray-800">
+            <CardContent className="p-4">
+              <div className="text-sm text-gray-400">24h High</div>
+              <div className="text-lg font-semibold text-white">$52.45</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-gray-900/50 border-gray-800">
+            <CardContent className="p-4">
+              <div className="text-sm text-gray-400">24h Low</div>
+              <div className="text-lg font-semibold text-white">$47.12</div>
+            </CardContent>
+          </Card>
         </div>
         
-        <div className="h-80 w-full rounded-xl border bg-background/50 p-4 backdrop-blur-sm">
-          <ChartContainer config={{
-            price: {
-              theme: {
-                light: "#22c55e",
-                dark: "#22c55e",
-              },
-            },
-          }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <XAxis 
-                  dataKey="date" 
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  padding={{ left: 10, right: 10 }}
-                />
-                <YAxis 
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => value.toFixed(8)}
-                  padding={{ top: 10, bottom: 10 }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="price" 
-                  stroke="var(--color-price)" 
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <Tooltip 
-                  formatter={(value: number) => [
-                    `$${value.toFixed(8)}`,
-                    "Price"
-                  ]}
-                  labelFormatter={(label) => `Date: ${label}`}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </div>
-        
-        <div className="mt-6 rounded-xl border bg-background/50 p-4 backdrop-blur-sm">
-          <h2 className="mb-2 font-medium">About $PEPE</h2>
-          <p className="text-sm text-muted-foreground">
-            $PEPE is a popular memecoin inspired by the Pepe the Frog character. 
-            It gained significant traction in the cryptocurrency market as a community-driven token.
-          </p>
-          <div className="mt-4 grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-xs text-muted-foreground">Market Cap</p>
-              <p className="font-medium">$420.69M</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">24h Volume</p>
-              <p className="font-medium">$35.8M</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Holders</p>
-              <p className="font-medium">125.3K</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Circulating Supply</p>
-              <p className="font-medium">420.69T</p>
-            </div>
-          </div>
+        {/* Trading Actions */}
+        <div className="flex gap-4">
+          <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white">
+            Buy {selectedToken}
+          </Button>
+          <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white">
+            Sell {selectedToken}
+          </Button>
         </div>
       </div>
-    </GradientBackground>
+    </div>
   );
 }
