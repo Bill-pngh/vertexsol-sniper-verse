@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Wallet, TrendingUp, Shield, Zap, Play } from "lucide-react";
+import { Wallet, TrendingUp, Shield, Zap } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -57,40 +57,44 @@ export default function HomePage() {
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Trade Execution Video */}
+              {/* Lightning Fast Trade Execution Video */}
               <div className="bg-gray-900/50 border border-gray-800 rounded-lg overflow-hidden">
-                <div className="relative aspect-video bg-gray-800 flex items-center justify-center">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20"></div>
-                  <div className="relative z-10 text-center">
-                    <Play className="h-16 w-16 text-white mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-white mb-2">Lightning Fast Execution</h3>
-                    <p className="text-gray-400 text-sm px-4">
-                      Watch how our advanced algorithms execute trades with minimal slippage
-                    </p>
+                <div className="relative aspect-square bg-gray-800">
+                  <div style={{position:"relative", width:"100%", height:"0px", paddingBottom:"100.000%"}}>
+                    <iframe 
+                      allow="fullscreen" 
+                      allowFullScreen 
+                      height="100%" 
+                      src="https://streamable.com/e/1w6mz7?nocontrols=1" 
+                      width="100%" 
+                      style={{border:"none", width:"100%", height:"100%", position:"absolute", left:"0px", top:"0px", overflow:"hidden"}}
+                    />
                   </div>
                 </div>
                 <div className="p-4">
-                  <h4 className="font-semibold text-white mb-2">Bundle Trading Demo</h4>
+                  <h4 className="font-semibold text-white mb-2">Lightning Fast Execution</h4>
                   <p className="text-gray-400 text-sm">
                     Execute multiple trades simultaneously with our advanced bundling technology
                   </p>
                 </div>
               </div>
               
-              {/* Sniping Video */}
+              {/* Precision Sniping Video */}
               <div className="bg-gray-900/50 border border-gray-800 rounded-lg overflow-hidden">
-                <div className="relative aspect-video bg-gray-800 flex items-center justify-center">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20"></div>
-                  <div className="relative z-10 text-center">
-                    <Play className="h-16 w-16 text-white mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-white mb-2">Precision Sniping</h3>
-                    <p className="text-gray-400 text-sm px-4">
-                      See how our sniping tools capture opportunities in milliseconds
-                    </p>
+                <div className="relative aspect-square bg-gray-800">
+                  <div style={{position:"relative", width:"100%", height:"0px", paddingBottom:"100.000%"}}>
+                    <iframe 
+                      allow="fullscreen" 
+                      allowFullScreen 
+                      height="100%" 
+                      src="https://streamable.com/e/qaa8p1?nocontrols=1" 
+                      width="100%" 
+                      style={{border:"none", width:"100%", height:"100%", position:"absolute", left:"0px", top:"0px", overflow:"hidden"}}
+                    />
                   </div>
                 </div>
                 <div className="p-4">
-                  <h4 className="font-semibold text-white mb-2">Token Launch Sniping</h4>
+                  <h4 className="font-semibold text-white mb-2">Precision Sniping</h4>
                   <p className="text-gray-400 text-sm">
                     Get first access to new token launches with our automated sniping system
                   </p>
