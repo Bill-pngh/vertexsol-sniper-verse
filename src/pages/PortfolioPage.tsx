@@ -6,14 +6,14 @@ import { TrendingUp, TrendingDown, Wallet, BarChart3 } from "lucide-react";
 
 export default function PortfolioPage() {
   const [portfolio] = useState({
-    totalValue: 45650.32,
-    dailyChange: 1250.48,
-    dailyChangePercent: 2.82,
+    totalValue: 0.00,
+    dailyChange: 0.00,
+    dailyChangePercent: 0.00,
     positions: [
-      { symbol: "SOL", amount: 125.5, value: 15420.50, change: 5.2 },
-      { symbol: "BONK", amount: 1500000, value: 8950.20, change: -2.1 },
-      { symbol: "JUP", amount: 2500, value: 12800.15, change: 8.7 },
-      { symbol: "WIF", amount: 850, value: 8479.47, change: -1.3 },
+      { symbol: "SOL", amount: 0.000, value: 0.00, change: 0.0 },
+      { symbol: "BONK", amount: 0.000, value: 0.00, change: 0.0 },
+      { symbol: "JUP", amount: 0.000, value: 0.00, change: 0.0 },
+      { symbol: "WIF", amount: 0.000, value: 0.00, change: 0.0 },
     ]
   });
 
@@ -47,7 +47,7 @@ export default function PortfolioPage() {
           <CardContent>
             <div className="space-y-2">
               <div className="text-3xl font-bold text-white">
-                ${portfolio.totalValue.toLocaleString()}
+                ${portfolio.totalValue.toFixed(2)}
               </div>
               <div className={`flex items-center gap-1 text-sm ${
                 portfolio.dailyChange >= 0 ? 'text-green-400' : 'text-red-400'
@@ -56,8 +56,8 @@ export default function PortfolioPage() {
                   <TrendingUp className="h-4 w-4" /> : 
                   <TrendingDown className="h-4 w-4" />
                 }
-                ${Math.abs(portfolio.dailyChange).toLocaleString()} 
-                ({portfolio.dailyChangePercent > 0 ? '+' : ''}{portfolio.dailyChangePercent}%)
+                ${Math.abs(portfolio.dailyChange).toFixed(2)} 
+                ({portfolio.dailyChangePercent.toFixed(2)}%)
               </div>
             </div>
           </CardContent>
@@ -77,17 +77,17 @@ export default function PortfolioPage() {
                   <div>
                     <div className="font-semibold text-white">{position.symbol}</div>
                     <div className="text-sm text-gray-400">
-                      {position.amount.toLocaleString()} tokens
+                      {position.amount.toFixed(3)} tokens
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="font-semibold text-white">
-                      ${position.value.toLocaleString()}
+                      ${position.value.toFixed(2)}
                     </div>
                     <div className={`text-sm ${
                       position.change >= 0 ? 'text-green-400' : 'text-red-400'
                     }`}>
-                      {position.change > 0 ? '+' : ''}{position.change}%
+                      {position.change.toFixed(1)}%
                     </div>
                   </div>
                 </div>

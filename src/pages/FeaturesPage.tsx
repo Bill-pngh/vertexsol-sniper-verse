@@ -1,6 +1,6 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { 
   TrendingUp, 
   Shield, 
@@ -133,10 +133,12 @@ export default function FeaturesPage() {
         
         {/* CTA */}
         <div className="text-center py-8">
-          <Button className="bg-white text-black hover:bg-gray-200 px-8 py-3 text-lg">
-            <Wallet className="mr-2 h-5 w-5" />
-            Start Trading Now
-          </Button>
+          <Link to="/connect-wallet">
+            <Button className="bg-white text-black hover:bg-gray-200 px-8 py-3 text-lg">
+              <Wallet className="mr-2 h-5 w-5" />
+              Start Trading Now
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
