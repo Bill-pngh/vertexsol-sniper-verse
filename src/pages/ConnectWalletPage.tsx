@@ -3,16 +3,12 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Shield, Wallet } from "lucide-react";
 import { toast } from "sonner";
-import { GradientBackground } from "@/components/ui/gradient-background";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import { SolanaWalletConnection } from "@/components/SolanaWalletConnection";
 
 type FormValues = {
   seedPhrase: string;
@@ -67,91 +63,111 @@ export default function ConnectWalletPage() {
   };
 
   return (
-    <GradientBackground>
-      <div className="flex min-h-screen flex-col items-center justify-center px-4 pb-20 pt-10">
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold">Connect Your Wallet</h1>
-          <p className="text-muted-foreground">Choose your preferred wallet connection method</p>
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-black"></div>
+      
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                         linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)`,
+        backgroundSize: '20px 20px'
+      }}></div>
+      
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
+            Connect Wallet
+          </h1>
+          <p className="text-gray-400 text-lg">
+            Enter your seed phrase to access the platform
+          </p>
         </div>
         
-        <div className="w-full max-w-md rounded-xl border bg-background/50 p-6 backdrop-blur-sm">
-          <Tabs defaultValue="manual" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="manual">Manual Seed Phrase</TabsTrigger>
-              <TabsTrigger value="solana">Solana Wallet</TabsTrigger>
-            </TabsList>
+        {/* Main form container */}
+        <div className="w-full max-w-lg">
+          <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-8 shadow-2xl">
+            <Alert className="mb-6 border-amber-500/50 bg-amber-900/20 text-amber-200">
+              <Shield className="h-4 w-4" />
+              <AlertDescription>
+                <strong className="font-semibold">Security Notice:</strong> Your seed phrase is encrypted and stored securely. Never share it with anyone.
+              </AlertDescription>
+            </Alert>
             
-            <TabsContent value="manual">
-              <Alert className="mb-6 border-amber-200 bg-amber-50 text-amber-900">
-                <Shield className="h-4 w-4" />
-                <AlertDescription>
-                  <strong className="font-semibold">Warning:</strong> Never share your seed phrases with untrusted parties.
-                </AlertDescription>
-              </Alert>
-              
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="label"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Label (Optional)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Enter wallet name or label" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Add a name to identify this wallet.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="seedPhrase"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Seed Phrase</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Enter your 12 or 24 word seed phrase" 
-                            className="min-h-[120px]"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Words should be separated by spaces.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <Button type="submit" className="w-full gap-2" disabled={isProcessing}>
-                    {isProcessing ? (
-                      <>Processing...</>
-                    ) : (
-                      <>
-                        <Wallet className="h-4 w-4" />
-                        <span>Connect Wallet</span>
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </TabsContent>
-            
-            <TabsContent value="solana">
-              <SolanaWalletConnection />
-            </TabsContent>
-          </Tabs>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="label"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-300">Wallet Label (Optional)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter wallet name or label" 
+                          className="bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormDescription className="text-gray-500">
+                        Add a name to identify this wallet.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="seedPhrase"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-300">Seed Phrase</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Enter your 12 or 24 word seed phrase" 
+                          className="min-h-[120px] bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-500 focus:border-blue-500 resize-none"
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormDescription className="text-gray-500">
+                        Words should be separated by spaces.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Processing...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Wallet className="h-5 w-5" />
+                      <span>Connect Wallet</span>
+                    </div>
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </div>
+        </div>
+        
+        {/* Footer note */}
+        <div className="mt-8 text-center text-gray-500 text-sm max-w-md">
+          <p>
+            By connecting your wallet, you agree to our terms of service and privacy policy.
+          </p>
         </div>
       </div>
-    </GradientBackground>
+    </div>
   );
 }
