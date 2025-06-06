@@ -63,6 +63,18 @@ export default function PortfolioPage() {
           </CardContent>
         </Card>
         
+        {/* Action Buttons - Made more prominent */}
+        <div className="grid grid-cols-2 gap-4">
+          <Button className="h-14 bg-green-600 hover:bg-green-700 text-white font-semibold text-lg shadow-lg border border-green-500">
+            <Wallet className="mr-2 h-5 w-5" />
+            Add Funds
+          </Button>
+          <Button className="h-14 bg-red-600 hover:bg-red-700 text-white font-semibold text-lg shadow-lg border border-red-500">
+            <TrendingDown className="mr-2 h-5 w-5" />
+            Withdraw
+          </Button>
+        </div>
+        
         {/* Positions */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-white flex items-center gap-2">
@@ -94,16 +106,6 @@ export default function PortfolioPage() {
               </CardContent>
             </Card>
           ))}
-        </div>
-        
-        {/* Action Buttons */}
-        <div className="flex gap-4">
-          <Button className="flex-1 bg-white text-black hover:bg-gray-200">
-            Add Funds
-          </Button>
-          <Button variant="outline" className="flex-1 border-gray-700 text-white hover:bg-gray-800">
-            Withdraw
-          </Button>
         </div>
       </div>
     </div>
