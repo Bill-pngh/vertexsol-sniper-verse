@@ -34,6 +34,7 @@ export default function ChartPage() {
   const fetchSolPrice = async () => {
     try {
       setIsLoading(true);
+      console.log('Fetching SOL price data...');
       const response = await fetch(
         'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_high_low_24h=true'
       );
@@ -41,24 +42,31 @@ export default function ChartPage() {
       if (!response.ok) throw new Error('Failed to fetch price data');
       
       const data = await response.json();
+      console.log('API response:', data);
       const solData = data.solana;
       
+      if (!solData) {
+        console.error('No solana data in response');
+        throw new Error('No Solana data found');
+      }
+      
       setPriceInfo({
-        current_price: solData.usd,
+        current_price: solData.usd || 0,
         price_change_percentage_24h: solData.usd_24h_change || 0,
-        high_24h: solData.usd_24h_high,
-        low_24h: solData.usd_24h_low,
-        total_volume: solData.usd_24h_vol
+        high_24h: solData.usd_24h_high || 0,
+        low_24h: solData.usd_24h_low || 0,
+        total_volume: solData.usd_24h_vol || 0
       });
 
       // Generate chart data points for the last 24 hours
       const now = new Date();
       const newChartData: PriceData[] = [];
+      const basePrice = solData.usd || 100; // Fallback price if undefined
       
       for (let i = 23; i >= 0; i--) {
         const time = new Date(now.getTime() - i * 60 * 60 * 1000);
         const variation = (Math.random() - 0.5) * 10; // Random variation for demo
-        const price = solData.usd + variation;
+        const price = basePrice + variation;
         
         newChartData.push({
           time: time.getHours().toString().padStart(2, '0') + ':00',
@@ -70,6 +78,14 @@ export default function ChartPage() {
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (error) {
       console.error('Error fetching SOL price:', error);
+      // Set fallback values on error
+      setPriceInfo({
+        current_price: 0,
+        price_change_percentage_24h: 0,
+        high_24h: 0,
+        low_24h: 0,
+        total_volume: 0
+      });
     } finally {
       setIsLoading(false);
     }
@@ -85,10 +101,15 @@ export default function ChartPage() {
   }, []);
 
   const formatVolume = (volume: number) => {
-    if (volume >= 1e9) return `$${(volume / 1e9).toFixed(1)}B`;
-    if (volume >= 1e6) return `$${(volume / 1e6).toFixed(1)}M`;
-    if (volume >= 1e3) return `$${(volume / 1e3).toFixed(1)}K`;
-    return `$${volume.toFixed(0)}`;
+    const safeVolume = volume || 0;
+    if (safeVolume >= 1e9) return `$${(safeVolume / 1e9).toFixed(1)}B`;
+    if (safeVolume >= 1e6) return `$${(safeVolume / 1e6).toFixed(1)}M`;
+    if (safeVolume >= 1e3) return `$${(safeVolume / 1e3).toFixed(1)}K`;
+    return `$${safeVolume.toFixed(0)}`;
+  };
+
+  const safeToFixed = (value: number | undefined, decimals: number = 2) => {
+    return (value || 0).toFixed(decimals);
   };
 
   return (
@@ -144,16 +165,16 @@ export default function ChartPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-3xl font-bold text-white">
-                  ${priceInfo.current_price.toFixed(2)}
+                  ${safeToFixed(priceInfo.current_price)}
                 </div>
                 <div className={`flex items-center gap-1 text-sm ${
-                  priceInfo.price_change_percentage_24h >= 0 ? 'text-green-400' : 'text-red-400'
+                  (priceInfo.price_change_percentage_24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'
                 }`}>
-                  {priceInfo.price_change_percentage_24h >= 0 ? 
+                  {(priceInfo.price_change_percentage_24h || 0) >= 0 ? 
                     <TrendingUp className="h-4 w-4" /> : 
                     <TrendingDown className="h-4 w-4" />
                   }
-                  {priceInfo.price_change_percentage_24h > 0 ? '+' : ''}{priceInfo.price_change_percentage_24h.toFixed(2)}% (24h)
+                  {(priceInfo.price_change_percentage_24h || 0) > 0 ? '+' : ''}{safeToFixed(priceInfo.price_change_percentage_24h)}% (24h)
                 </div>
               </div>
               <div className="text-right">
@@ -208,14 +229,14 @@ export default function ChartPage() {
           <Card className="bg-gray-900/50 border-gray-800">
             <CardContent className="p-4">
               <div className="text-sm text-gray-400">24h High</div>
-              <div className="text-lg font-semibold text-white">${priceInfo.high_24h.toFixed(2)}</div>
+              <div className="text-lg font-semibold text-white">${safeToFixed(priceInfo.high_24h)}</div>
             </CardContent>
           </Card>
           
           <Card className="bg-gray-900/50 border-gray-800">
             <CardContent className="p-4">
               <div className="text-sm text-gray-400">24h Low</div>
-              <div className="text-lg font-semibold text-white">${priceInfo.low_24h.toFixed(2)}</div>
+              <div className="text-lg font-semibold text-white">${safeToFixed(priceInfo.low_24h)}</div>
             </CardContent>
           </Card>
         </div>
